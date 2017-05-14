@@ -15,9 +15,24 @@ public class CommandAnalyzer {
     private Map<DockerHeaders, HeaderElement> headerElementMap = new HashMap<>();
     private CommandExecutor commandExecutor = new CommandExecutor();
 
-    public CommandAnalyzer(String command) throws Exception {
+    public void analyzeCommand(String command) throws Exception {
         commandExecutor.executeCommand(command);
         analyzeHeaderRow(commandExecutor.getExecutionResult());
+    }
+
+    public DockerContainer extractContainerInfoFromLine(String line) {
+        return new DockerContainer(extractElementInfo(DockerHeaders.CONTAINER_ID, line),
+                extractElementInfo(DockerHeaders.IMAGE, line), extractElementInfo(DockerHeaders.COMMAND, line),
+                extractElementInfo(DockerHeaders.CREATED, line), extractElementInfo(DockerHeaders.STATUS, line),
+                extractElementInfo(DockerHeaders.PORTS, line), extractElementInfo(DockerHeaders.NAMES, line));
+    }
+
+    public List<String> getResultLines() {
+        String[] lines = commandExecutor.getExecutionResult().split(NEW_LINE_CHARACTER);
+
+        List<String> responseLines = new ArrayList<>();
+        responseLines.addAll(Arrays.asList(lines).subList(1, lines.length));
+        return responseLines;
     }
 
     private Map<DockerHeaders, HeaderElement> getHeaderElementMap() {
@@ -65,18 +80,4 @@ public class CommandAnalyzer {
         return elementInfo.trim();
     }
 
-    public DockerContainer extractContainerInfoFromLine(String line) {
-        return new DockerContainer(extractElementInfo(DockerHeaders.CONTAINER_ID, line),
-                extractElementInfo(DockerHeaders.IMAGE, line), extractElementInfo(DockerHeaders.COMMAND, line),
-                extractElementInfo(DockerHeaders.CREATED, line), extractElementInfo(DockerHeaders.STATUS, line),
-                extractElementInfo(DockerHeaders.PORTS, line), extractElementInfo(DockerHeaders.NAMES, line));
-    }
-
-    public List<String> getResultLines() {
-        String[] lines = commandExecutor.getExecutionResult().split(NEW_LINE_CHARACTER);
-
-        List<String> responseLines = new ArrayList<>();
-        responseLines.addAll(Arrays.asList(lines).subList(1, lines.length));
-        return responseLines;
-    }
 }

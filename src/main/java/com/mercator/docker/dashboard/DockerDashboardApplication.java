@@ -20,6 +20,22 @@ public class DockerDashboardApplication extends Application {
         scene = new Scene(dockerDashboardPane, 1200, 475);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        new Thread(() -> {
+            try {
+                dockerDashboardPane.initialize();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+//        Platform.runLater(() -> {
+//            try {
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+
     }
 
     public static void main(String[] args) {
