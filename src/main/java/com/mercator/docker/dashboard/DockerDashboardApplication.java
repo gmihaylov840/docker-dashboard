@@ -21,6 +21,10 @@ public class DockerDashboardApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        initializedDashboard(dockerDashboardPane);
+    }
+
+    private void initializedDashboard(DockerDashboardPane dockerDashboardPane) {
         new Thread(() -> {
             try {
                 dockerDashboardPane.initialize();
@@ -28,14 +32,6 @@ public class DockerDashboardApplication extends Application {
                 e.printStackTrace();
             }
         }).start();
-
-//        Platform.runLater(() -> {
-//            try {
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-
     }
 
     public static void main(String[] args) {

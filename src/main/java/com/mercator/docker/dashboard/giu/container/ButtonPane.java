@@ -5,15 +5,14 @@ import com.mercator.docker.dashboard.giu.controls.StartContainerButton;
 import com.mercator.docker.dashboard.giu.controls.StopContainerButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -25,11 +24,10 @@ public class ButtonPane extends VBox {
 
     private StartContainerButton startButton;
     private final HBox buttonsContainer;
-    private StopContainerButton stopButton;
 
     public ButtonPane() {
         Separator separator = new Separator();
-        separator.setStyle("-fx-border-style: solid;-fx-border-width: 5 0 5 0;-fx-border-color: transparent;");
+        separator.setStyle("-fx-border-style: solid; -fx-border-width: 5 0 5 0; -fx-border-color: transparent;");
         separator.setPrefWidth(Double.MAX_VALUE);
         getChildren().add(separator);
 
@@ -40,7 +38,7 @@ public class ButtonPane extends VBox {
     }
 
     private void addLogButton(String containerId, String imageName) {
-        Button showLogButton = new Button("Show log");
+        Button showLogButton = new Button("Log");
         showLogButton.setOnAction(e -> {
             String result = new CommandExecutor().executeCommand("docker logs " + containerId);
             TextFlow textFlow = new TextFlow();
@@ -52,19 +50,35 @@ public class ButtonPane extends VBox {
             Stage stage = new Stage();
             stage.setTitle(imageName + " log");
 
-            VBox logVboxPane = new VBox();
-            logVboxPane.getChildren().add(logPane);
+            VBox logVBoxPane = new VBox();
+            logVBoxPane.getChildren().add(logPane);
 
-            ScrollPane sp = new ScrollPane();
-            sp.setContent(logVboxPane);
-            sp.setPrefSize(1000, 500);
-            Button logRefreshButton = new Button("Refresh log");
+            ScrollPane scrollPane = new ScrollPane();
+            BackgroundFill myBF = new BackgroundFill(Color.RED, null, null);
+            scrollPane.setBackground(new Background(myBF));
+            scrollPane.setStyle("-fx-background: #2b2b2b; -fx-text-fill: #cecece");
+            scrollPane.setContent(logVBoxPane);
+            scrollPane.setPrefSize(1000, 500);
+            Button logRefreshButtonTop = new Button("Refresh log");
 
-            VBox mainVbox  = new VBox();
-            mainVbox.getChildren().add(logRefreshButton);
-            mainVbox.getChildren().add(sp);
+            Button goToTopBtn = new Button("Go to top");
+            goToTopBtn.setOnAction(actionEvent -> scrollPane.setVvalue(0));
+            HBox bottomButtonPane = new HBox(goToTopBtn);
+            bottomButtonPane.setPadding(new Insets(5, 5, 5, 5));
 
-            Scene scene = new Scene(mainVbox);
+            Button goToBottomBtn = new Button("Go to bottom");
+            goToBottomBtn.setOnAction(actionEvent -> scrollPane.setVvalue(1));
+            HBox topButtonPane = new HBox(logRefreshButtonTop, goToBottomBtn);
+            topButtonPane.setSpacing(10);
+            topButtonPane.setPadding(new Insets(5, 5, 5, 5));
+
+            VBox mainVBox = new VBox();
+            mainVBox.setStyle("-fx-background-color: #2b2b2b");
+            mainVBox.getChildren().add(topButtonPane);
+            mainVBox.getChildren().add(scrollPane);
+            mainVBox.getChildren().add(bottomButtonPane);
+
+            Scene scene = new Scene(mainVBox);
             stage.setScene(scene);
 
             stage.show();
@@ -81,7 +95,7 @@ public class ButtonPane extends VBox {
 
     public void updateForStartedContainer(String containerId, String imageName, StackPane containerInfoStackPane,
                                           DockerDashboardPane dashboardPane) {
-        stopButton = new StopContainerButton(containerId, containerInfoStackPane, this, dashboardPane);
+        StopContainerButton stopButton = new StopContainerButton(containerId, containerInfoStackPane, this, dashboardPane);
         startButton.setDisable(true);
         DockerDashboardPane.buttonMap.put(stopButton, "stop");
         buttonsContainer.getChildren().add(stopButton);

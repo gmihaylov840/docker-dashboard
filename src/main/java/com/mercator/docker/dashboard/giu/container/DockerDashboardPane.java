@@ -8,8 +8,10 @@ import com.mercator.docker.dashboard.giu.controls.StopAllContainersButton;
 import com.mercator.docker.dashboard.property.ContainerDetector;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
@@ -89,14 +91,12 @@ public class DockerDashboardPane extends Pane {
             progressVBox.getChildren().add(progressBar);
             progressBar.visibleProperty().bind(isInitializedProperty.not());
 
-            getChildren().add(progressVBox);
+            runInProperThread((x) -> getChildren().add(progressVBox));
         }).start();
     }
 
     public void initialize() throws Exception {
-        for (int i = 0; i < 100000; ++i) {
-            System.out.println(i);
-        }
+        Thread.sleep(3000);
 
         dockerContainersTilePane = populateDockerContainersPane();
         runInProperThread((x) -> getChildren().add(dockerContainersTilePane));
@@ -137,11 +137,10 @@ public class DockerDashboardPane extends Pane {
 
     private void loadContainersInfo(TilePane tilePane) throws Exception {
         commandAnalyzer.analyzeCommand("docker ps");
-
-//        ObservableList<Node> children = tilePane.getChildren();
-//        if (children != null && children.size() > 0) {
-//            children.clear();
-//        }
+        ObservableList<Node> children = tilePane.getChildren();
+        if (children != null && children.size() > 0) {
+            children.clear();
+        }
 
         addMissingContainers(tilePane, containerDetector.getDetectedImages());
     }

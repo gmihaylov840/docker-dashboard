@@ -21,7 +21,7 @@ public class ContainerVBox extends VBox {
 
     public void populateMissingContainer(String dockerImageName, StackPane containerInfoStackPane,
                                          DockerDashboardPane dashboardPane) {
-        setPadding(new Insets(10));
+        setPadding(new Insets(10,10,10,10));
         setSpacing(0.0);
 
         String backgroundColor = "-fx-background-color: linear-gradient(from 0px 0px to 0px 35px, #800015, #ab0a0f 35%, #720005 99%, dimgray);";
