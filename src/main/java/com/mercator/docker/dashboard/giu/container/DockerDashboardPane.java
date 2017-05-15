@@ -39,10 +39,11 @@ public class DockerDashboardPane extends Pane {
     private CommandAnalyzer commandAnalyzer = new CommandAnalyzer();
     private TilePane dockerContainersTilePane;
     private List<String> containerIds = new ArrayList<>();
-    private BooleanProperty isInitializedProperty;
+//    private BooleanProperty isInitializedProperty;
+    private VBox progressVBox;
 
     public DockerDashboardPane() throws Exception {
-        isInitializedProperty = new SimpleBooleanProperty(false);
+//        isInitializedProperty = new SimpleBooleanProperty(false);
 
         setStyle("-fx-background-color: #2b2b2b");
 
@@ -81,7 +82,7 @@ public class DockerDashboardPane extends Pane {
             progressBar.setTooltip(new Tooltip(loadingLabel));
             progressBar.setPrefWidth(1100);
 
-            VBox progressVBox = new VBox();
+            progressVBox = new VBox();
             progressVBox.boundsInLocalProperty();
             progressVBox.setAlignment(Pos.BASELINE_CENTER);
             progressVBox.setSpacing(10);
@@ -89,7 +90,7 @@ public class DockerDashboardPane extends Pane {
             progressVBox.setLayoutY(140);
             progressVBox.getChildren().add(progressLabel);
             progressVBox.getChildren().add(progressBar);
-            progressBar.visibleProperty().bind(isInitializedProperty.not());
+//            progressBar.visibleProperty().bind(isInitializedProperty.not());
 
             runInProperThread((x) -> getChildren().add(progressVBox));
         }).start();
@@ -101,7 +102,7 @@ public class DockerDashboardPane extends Pane {
         dockerContainersTilePane = populateDockerContainersPane();
         runInProperThread((x) -> getChildren().add(dockerContainersTilePane));
 
-        isInitializedProperty.setValue(true);
+        progressVBox.setVisible(false);
     }
 
     private void runInProperThread(Consumer guiAction) {
